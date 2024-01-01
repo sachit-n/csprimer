@@ -40,16 +40,9 @@ def hex_to_dec(hex_str: str) -> int:
     return sum([hex_digit_to_dec(hex_digits[i], i) for i in range(len(hex_digits))])
 
 
-def hex_3_to_6(hex_str: str) -> str:
+def hex_short_to_long(hex_str: str) -> str:
     """
     convert 3-digit hex color to 6-digit hex color
-    """
-    return "".join([hex_str[i]*2 for i in range(len(hex_str))])
-
-
-def hex_4_to_8(hex_str: str) -> str:
-    """
-    convert 4-digit hex color to 8-digit hex color
     """
     return "".join([hex_str[i]*2 for i in range(len(hex_str))])
 
@@ -59,10 +52,8 @@ def color_convert(re_match: re.Match) -> str:
     convert color from hex to rgb
     """
     hex_str = re_match.group()[1:]
-    if len(hex_str) == 3:
-        hex_str = hex_3_to_6(hex_str)
-    if len(hex_str) == 4:
-        hex_str = hex_4_to_8(hex_str)
+    if len(hex_str) == 3 or len(hex_str) == 4:
+        hex_str = hex_short_to_long(hex_str)
 
     r = str(hex_to_dec(hex_str[:2]))
     g = str(hex_to_dec(hex_str[2:4]))
