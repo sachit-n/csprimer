@@ -1,10 +1,15 @@
 import re
 
-file_path = "color-convert/simple.css"
+file_path = "color-convert/advanced.css"
+out_path = "color-convert/advanced-converted.css"
 
 
 def read_file(fp: str) -> str:
     return open(fp, "r").read()
+
+
+def write_file(string: str, fp: str) -> None:
+    open(fp, "w").write(string)
 
 
 def hex_digit_to_dec(hex_digit, place_value=0):
@@ -42,6 +47,13 @@ def hex_3_to_6(hex_str: str) -> str:
     return "".join([hex_str[i]*2 for i in range(len(hex_str))])
 
 
+def hex_4_to_8(hex_str: str) -> str:
+    """
+    convert 4-digit hex color to 8-digit hex color
+    """
+    return "".join([hex_str[i]*2 for i in range(len(hex_str))])
+
+
 def color_convert(re_match: re.Match) -> str:
     """
     convert color from hex to rgb
@@ -49,15 +61,27 @@ def color_convert(re_match: re.Match) -> str:
     hex_str = re_match.group()[1:]
     if len(hex_str) == 3:
         hex_str = hex_3_to_6(hex_str)
+    if len(hex_str) == 4:
+        hex_str = hex_4_to_8(hex_str)
+
     r = str(hex_to_dec(hex_str[:2]))
     g = str(hex_to_dec(hex_str[2:4]))
     b = str(hex_to_dec(hex_str[4:6]))
+
+    if len(hex_str) == 8:
+        a = hex_to_dec(hex_str[6:8])
+        alpha = str(round(a/255, 5))
+        return f"rgba({r}, {g}, {b} / {alpha})"
+
     return f"rgb({r}, {g}, {b})"
 
 
 def main():
     css_str = read_file(file_path)
-    return re.sub(pattern="#[0-9a-fA-F]+", repl=color_convert, string=css_str)
+    out = re.sub(pattern="#[0-9a-fA-F]+", repl=color_convert, string=css_str)
+    write_file(out, out_path)
+    print(f"Converted {file_path} to {out_path}")
+    return out
 
 
 if __name__=="__main__":
